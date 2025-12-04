@@ -56,22 +56,20 @@ public enum SQLiteManager {
 
     }
 
-    
+
     @SuppressWarnings("CallToPrintStackTrace")
     public synchronized boolean isConnected() throws SQLException {
 
         try {
-
-            if (connection != null || connection.isClosed()) {
-
+            if (connection != null) {
+                
                 System.out.println("Existe la conexión");
-
+                
                 return true;
             }
-
-        } catch (SQLException ex) {
-
-            ex.printStackTrace();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         System.out.println("No existe la conexión");
 
