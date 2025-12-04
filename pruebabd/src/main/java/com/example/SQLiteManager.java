@@ -26,6 +26,7 @@ public enum SQLiteManager {
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
+
         }
 
         return connection;
@@ -48,39 +49,54 @@ public enum SQLiteManager {
 
         } catch (SQLException ex) {
 
+            ex.printStackTrace();
         }
 
         connection = null;
 
     }
 
+    
+    @SuppressWarnings("CallToPrintStackTrace")
     public synchronized boolean isConnected() throws SQLException {
 
-        if (connection != null || connection.isClosed()) {
+        try {
 
-            System.out.println("Existe la conexión");
+            if (connection != null || connection.isClosed()) {
 
-            return true;
-        } else {
-            System.out.println("No existe la conexión");
+                System.out.println("Existe la conexión");
 
-            return false;
+                return true;
+            }
+
+        } catch (SQLException ex) {
+
+            ex.printStackTrace();
         }
+        System.out.println("No existe la conexión");
+
+        return false;
 
     }
 
+    @SuppressWarnings("CallToPrintStackTrace")
 
     public synchronized void ensureConnection() throws SQLException {
 
-        if (connection != null) {
+        try {
+            if (connection != null) {
 
-            System.out.println("Está conectado");
+                System.out.println("Está conectado");
 
-        } else if (connection == null || connection.isClosed()) {
+            } else if (connection == null || connection.isClosed()) {
 
-            connection = DriverManager.getConnection("jdbc:sqlite:app.db");
+                connection = DriverManager.getConnection("jdbc:sqlite:app.db");
 
-            System.out.println("Se creó una nueva conexión");
+                System.out.println("Se creó una nueva conexión");
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
     }
