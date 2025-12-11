@@ -4,13 +4,19 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class Main {
+public class Main3 {
     public static void main(String[] args) {
 
+        String Direccion = "jdbc:sqlite:biblioteca.db";
+
+        Conexion(Direccion);
+    }
+
+    private static void Conexion( String Direccion) {
         try {
             Class.forName("org.sqlite.JDBC");
 
-            String Direccion = "jdbc:sqlite:biblioteca.db";
+            
 
             System.out.println("Intentando conectar a: " + Direccion);
             try (Connection conexion = DriverManager.getConnection("jdbc:sqlite:" + Direccion)) {
@@ -21,7 +27,7 @@ public class Main {
 
                 System.out.println("\nError al conectar con la base de datos");
                 System.out.print("Detalle: [");
-                System.getLogger(Main.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                System.getLogger(Main3.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
                 System.out.print("]");
 
             }
@@ -29,7 +35,7 @@ public class Main {
             System.out.println("\nConexión cerrada correctamente");
 
         } catch (ClassNotFoundException ex) {
-            System.getLogger(Main.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            System.getLogger(Main3.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }
 }
