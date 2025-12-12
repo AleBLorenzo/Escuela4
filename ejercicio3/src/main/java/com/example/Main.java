@@ -18,7 +18,7 @@ public class Main {
 
         String user = "usuario";
         String password = "usuario123";
-        String urlnativo = "jdbc:mysql://100.87.253.15:3306/";
+        String urlnativo = "jdbc:mysql://100.87.253.157:3306/";
         String urlNoTimezone = "jdbc:mysql://100.87.253.157:3306/academia";
         String url = urlNoTimezone+"?serverTimezone=UTC";
 
