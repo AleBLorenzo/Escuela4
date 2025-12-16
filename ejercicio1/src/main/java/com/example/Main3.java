@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class Main3 {
     public static void main(String[] args) {
 
-        String Direccion = "jdbc:sqlite:biblioteca.db";
+        String Direccion = "biblioteca.db";
 
         Conexion(Direccion);
     }
