@@ -12,7 +12,7 @@ encuanto a la optencion de los datos es igual  diferecia en postgresql tengo q e
 a la base de datos que me vot a conetar mientras q en mysql no tiene q ser aswi igual se coneta
 como puedes ver en urlnativo donde se coneta igual sin la base de datos especificada
 */
-public class Main {
+public class Main09 {
 
     public static void main(String[] args) {
 
@@ -55,7 +55,7 @@ public class Main {
                     System.out.println("No se pudo conectar al servidor MySQL");
                     System.out.println("Causa: ");
 
-                    System.getLogger(Main.class.getName()).log(System.Logger.Level.ERROR, (String) null, e);
+                    System.getLogger(Main09.class.getName()).log(System.Logger.Level.ERROR, (String) null, e);
 
                 }
 

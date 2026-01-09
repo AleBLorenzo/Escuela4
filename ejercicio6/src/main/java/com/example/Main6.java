@@ -87,7 +87,7 @@ public class Main6 {
 
                     }
                 } catch (Exception e) {
-                    // TODO Auto-generated catch block
+                    // TODO Auto-gene mintrated catch block
                     e.printStackTrace();
                 }
                 try {
