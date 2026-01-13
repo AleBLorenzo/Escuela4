@@ -42,23 +42,25 @@ public class AutorDAOImpl implements IAutorDAO {
     @Override
     public Autor buscarPorId(int id) {
 
-        Autor autor = new Autor();
         String sql = "SELECT * FROM autores WHERE id = ?";
 
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, id);
 
-            while (rs.next()) {
+            try (ResultSet rs = ps.executeQuery()) {
 
-                autor.setId(rs.getInt("id"));
-                autor.setNombre(rs.getString("nombre"));
-                autor.setApellidos(rs.getString("apellidos"));
-                autor.setNacionalidad(rs.getString("nacionalidad"));
-                autor.setFecha_nacimiento(rs.getObject("fecha_nacimiento", LocalDate.class));
+                if (rs.next()) {
 
-                return autor;
+                    Autor autor = new Autor();
+
+                    autor.setId(rs.getInt("id"));
+                    autor.setNombre(rs.getString("nombre"));
+                    autor.setApellidos(rs.getString("apellidos"));
+                    autor.setNacionalidad(rs.getString("nacionalidad"));
+                    autor.setFecha_nacimiento(rs.getObject("fecha_nacimiento", LocalDate.class));
+                    return autor;
+                }
             }
 
         } catch (SQLException e) {
@@ -71,7 +73,6 @@ public class AutorDAOImpl implements IAutorDAO {
     @Override
     public List<Autor> listarTodos() {
 
-        Autor autor = new Autor();
         List<Autor> lista = new ArrayList<>();
         String sql = "SELECT * FROM autores";
 
@@ -79,7 +80,7 @@ public class AutorDAOImpl implements IAutorDAO {
                 ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                
+                Autor autor = new Autor();
                 autor.setId(rs.getInt("id"));
                 autor.setNombre(rs.getString("nombre"));
                 autor.setApellidos(rs.getString("apellidos"));
@@ -112,12 +113,33 @@ public class AutorDAOImpl implements IAutorDAO {
                 WHERE id = ?
                 """;
 
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, Autor.getNombre());
+            ps.setString(2, Autor.getApellidos());
+            ps.setString(3, Autor.getNacionalidad());
+            ps.setObject(4, Autor.getFecha_nacimiento());
+            ps.setInt(5, Autor.getId());
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
     public void eliminar(int id) {
 
         String sql = "DELETE FROM autores WHERE id = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -126,6 +148,28 @@ public class AutorDAOImpl implements IAutorDAO {
 
         List<Autor> lista = new ArrayList<>();
         String sql = "SELECT * FROM autores WHERE nacionalidad = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, nacionalidad);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Autor autor = new Autor();
+                autor.setId(rs.getInt("id"));
+                autor.setNombre(rs.getString("nombre"));
+                autor.setApellidos(rs.getString("apellidos"));
+                autor.setNacionalidad(rs.getString("nacionalidad"));
+                autor.setFecha_nacimiento(rs.getObject("fecha_nacimiento", LocalDate.class));
+
+                lista.add(autor);
+
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return lista;
 
     }
@@ -135,8 +179,29 @@ public class AutorDAOImpl implements IAutorDAO {
 
         List<Autor> lista = new ArrayList<>();
         String sql = "SELECT * FROM autores WHERE fecha_nacimiento = ?";
-        return lista;
 
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setObject(1, fecha_nacimiento);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Autor autor = new Autor();
+                autor.setId(rs.getInt("id"));
+                autor.setNombre(rs.getString("nombre"));
+                autor.setApellidos(rs.getString("apellidos"));
+                autor.setNacionalidad(rs.getString("nacionalidad"));
+                autor.setFecha_nacimiento(rs.getObject("fecha_nacimiento", LocalDate.class));
+
+                lista.add(autor);
+
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return lista;
     }
 
 }
