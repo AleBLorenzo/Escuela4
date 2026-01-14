@@ -1,0 +1,11 @@
+/home/manana/Escritorio/Escuela4/ejercicio9/src/main/java/com/example/app/AplicacionBiblioteca.java
+/home/manana/Escritorio/Escuela4/ejercicio9/src/main/java/com/example/dao/AutorDAOImpl.java
+/home/manana/Escritorio/Escuela4/ejercicio9/src/main/java/com/example/dao/IAutorDAO.java
+/home/manana/Escritorio/Escuela4/ejercicio9/src/main/java/com/example/dao/ILibroDAO.java
+/home/manana/Escritorio/Escuela4/ejercicio9/src/main/java/com/example/dao/IPrestamoDAO.java
+/home/manana/Escritorio/Escuela4/ejercicio9/src/main/java/com/example/dao/LibroDAOImpl.java
+/home/manana/Escritorio/Escuela4/ejercicio9/src/main/java/com/example/dao/PrestamoDAOImpl.java
+/home/manana/Escritorio/Escuela4/ejercicio9/src/main/java/com/example/model/Autor.java
+/home/manana/Escritorio/Escuela4/ejercicio9/src/main/java/com/example/model/Libro.java
+/home/manana/Escritorio/Escuela4/ejercicio9/src/main/java/com/example/model/Prestamo.java
+/home/manana/Escritorio/Escuela4/ejercicio9/src/main/java/com/example/util/ConexionDB.java

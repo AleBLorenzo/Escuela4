@@ -23,25 +23,25 @@ public class ConexionDB {
     private String password;
     private String driver;
 
-    // Private constructor: carga propiedades y establece conexión
-    private ConexionDB() {
-        try {
-            Properties props = new Properties();
-            props.load(new FileInputStream("db.properties"));
+        // Private constructor: carga propiedades y establece conexión
+        private ConexionDB() {
+            try {
+                Properties props = new Properties();
+                props.load(new FileInputStream("/home/manana/Escritorio/Escuela4/ejercicio9/db.properties"));
 
-            driver = props.getProperty("db.driver");
-            url = props.getProperty("db.url");
-            usuario = props.getProperty("db.user");
-            password = props.getProperty("db.password");
+                driver = props.getProperty("db.driver");
+                url = props.getProperty("db.url");
+                usuario = props.getProperty("db.user");
+                password = props.getProperty("db.password");
 
-            Class.forName(driver);
-            connection = DriverManager.getConnection(url, usuario, password);
-            connection.setAutoCommit(false); // control de transacciones manual
-        } catch (IOException | ClassNotFoundException | SQLException ex) {
-            LOGGER.log(Level.SEVERE, "Error al conectar a la base de datos", ex);
-            throw new RuntimeException(ex);
+                Class.forName(driver);
+                connection = DriverManager.getConnection(url, usuario, password);
+                connection.setAutoCommit(false); // control de transacciones manual
+            } catch (IOException | ClassNotFoundException | SQLException ex) {
+                LOGGER.log(Level.SEVERE, "Error al conectar a la base de datos", ex);
+                throw new RuntimeException(ex);
+            }
         }
-    }
 
     // Método para obtener la instancia Singleton
     public static ConexionDB getInstance() {

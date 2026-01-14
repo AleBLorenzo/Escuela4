@@ -15,11 +15,11 @@
             <version>1.4.14</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.7.1</version>
-        </dependency>
+         <dependency>
+        <groupId>com.mysql</groupId>
+        <artifactId>mysql-connector-j</artifactId>
+        <version>8.1.0</version> <!-- la última versión estable -->
+    </dependency>
     </dependencies>
 
     <properties>
