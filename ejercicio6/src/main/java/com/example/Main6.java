@@ -3,6 +3,7 @@ package com.example;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -25,6 +26,18 @@ public class Main6 {
 
             try (Connection conexion = DriverManager.getConnection(dirrecion, user, pass)) {
 
+                // ===============================================
+                // Nota sobre ResultSet:
+                // Usamos TYPE_SCROLL_INSENSITIVE y CONCUR_READ_ONLY para permitir navegación
+                // completa:
+                // - first(), last(), next(), previous(), absolute(), relative()
+                // A diferencia de un ResultSet forward-only (por defecto),
+                // que solo permite avanzar hacia adelante con next() y no permite ir atrás ni
+                // saltar posiciones.
+                // Esto es útil para interfaces que necesitan mostrar filas arbitrarias o
+                // paginación.
+                // ===============================================
+
                 Statement sentecia = conexion.createStatement(
                         ResultSet.TYPE_SCROLL_INSENSITIVE, // Scrollable
                         ResultSet.CONCUR_READ_ONLY // Solo lectura
@@ -37,7 +50,7 @@ public class Main6 {
                         "    precio DECIMAL(10,2),\n" + //
                         "    stock INTEGER,\n" + //
                         "    descripcion TEXT,\n" + //
-                         "     UNIQUE (nombre)\n" + //
+                        "     UNIQUE (nombre)\n" + //
                         ");");
 
                 sentecia.executeUpdate("INSERT INTO productos (nombre, categoria, precio, stock, descripcion) VALUES\n"
@@ -53,104 +66,51 @@ public class Main6 {
                         "('Fuente de Alimentación 600W', 'Componentes', 65.50, 10, NULL),\n" + //
                         "('Placa Base ATX', 'Componentes', 120.00, 5, 'Compatible con procesadores Intel y AMD'),\n" + //
                         "('Procesador Intel i5', 'Procesadores', 199.99, 8, '10ª generación, 6 núcleos'),\n" + //
-                        "('Caja PC Mid Tower', NULL, 49.99, 12, NULL)"+" ON CONFLICT (nombre) DO NOTHING;");
+                        "('Caja PC Mid Tower', NULL, 49.99, 12, NULL)" + " ON CONFLICT (nombre) DO NOTHING;");
 
                 ResultSet resultset = sentecia.executeQuery("SELECT * FROM productos");
 
+                System.out.println("\n=== METADATOS DEL RESULTSET ===");
 
+                ResultSetMetaData meta = resultset.getMetaData();
 
+                int columnas = meta.getColumnCount();
+                System.out.println("Número de columnas: " + columnas);
 
-                try {
-                    if (resultset.first()) {
-
-                        int id = resultset.getInt("id");
-                       String nombre =  resultset.getString("nombre");
-                       double precio =  resultset.getDouble("precio");
-
-                       System.out.println("[FIRST] Primer producto:");
-                       System.out.printf("%-2d %-10s %.2f\n", id , nombre, precio);
-
-                    }
-                } catch (Exception e) {
-                    
-                    e.printStackTrace();
+                for (int i = 1; i <= columnas; i++) {
+                    System.out.println(
+                            "Columna " + i + ": " + meta.getColumnName(i) + " (" + meta.getColumnTypeName(i) + ")");
                 }
 
-                try {
-                    if (resultset.previous()) {
-                           int id = resultset.getInt("id");
-                       String nombre =  resultset.getString("nombre");
-                       double precio =  resultset.getDouble("precio");
-
-                       System.out.println("[FIRST] Primer producto:");
-                       System.out.printf("%-2d %-10s %.2f\n", id , nombre, precio);
-
-                    }
-                } catch (Exception e) {
-                    // TODO Auto-gene mintrated catch block
-                    e.printStackTrace();
-                }
-                try {
-                    if (resultset.last()) {
-                           int id = resultset.getInt("id");
-                       String nombre =  resultset.getString("nombre");
-                       double precio =  resultset.getDouble("precio");
-
-                       System.out.println("[FIRST] Primer producto:");
-                       System.out.printf("%-2d %-10s %.2f\n", id , nombre, precio);
-
-                    }
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                if (resultset.first()) {
+                    System.out.println(
+                            "Fila actual: " + resultset.getRow() + " | Producto: " + resultset.getString("nombre"));
                 }
 
-                try {
-                    if (resultset.absolute(5)) {
-                           int id = resultset.getInt("id");
-                       String nombre =  resultset.getString("nombre");
-                       double precio =  resultset.getDouble("precio");
-
-                       System.out.println("[FIRST] Primer producto:");
-                       System.out.printf("%-2d %-10s %.2f\n", id , nombre, precio);
-
-                    }
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                try {
-                    if (resultset.relative(2)) {
-                           int id = resultset.getInt("id");
-                       String nombre =  resultset.getString("nombre");
-                       double precio =  resultset.getDouble("precio");
-
-                       System.out.println("[FIRST] Primer producto:");
-                       System.out.printf("%-2d %-10s %.2f\n", id , nombre, precio);
-
-                    }
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                if (resultset.next()) {
+                    System.out.println(
+                            "Fila actual: " + resultset.getRow() + " | Producto: " + resultset.getString("nombre"));
                 }
 
-                try {
-                    if (resultset.relative(-3)) {
-                           int id = resultset.getInt("id");
-                       String nombre =  resultset.getString("nombre");
-                       double precio =  resultset.getDouble("precio");
-
-                       System.out.println("[FIRST] Primer producto:");
-                       System.out.printf("%-2d %-10s %.2f\n", id , nombre, precio);
-
-                    }
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                if (resultset.last()) {
+                    System.out.println(
+                            "Fila actual: " + resultset.getRow() + " | Producto: " + resultset.getString("nombre"));
                 }
 
+                if (resultset.absolute(5)) {
+                    System.out.println("Fila actual: " + resultset.getRow() + " | Producto absoluto 5: "
+                            + resultset.getString("nombre"));
+                }
 
+                if (resultset.relative(2)) {
+                    System.out.println("Fila actual: " + resultset.getRow() + " | Producto relativo +2: "
+                            + resultset.getString("nombre"));
+                }
 
+                if (resultset.relative(-3)) {
+                    System.out.println("Fila actual: " + resultset.getRow() + " | Producto relativo -3: "
+                            + resultset.getString("nombre"));
+                }
 
             } catch (SQLException ex) {
 

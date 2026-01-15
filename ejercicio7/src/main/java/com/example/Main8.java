@@ -85,7 +85,7 @@ public class Main8 {
         int contador = 0;
 
         pst.setBoolean(1, true);
-        pst.setString(2, "%car&");
+        pst.setString(2, "%car%");
 
         ResultSet rs = pst.executeQuery();
 
@@ -108,6 +108,9 @@ public class Main8 {
         PreparedStatement pst = conexion.prepareStatement(delete);
 
         pst.setInt(1, 2);
+
+        int filas = pst.executeUpdate();
+        System.out.println("→ Filas eliminadas: " + filas);
 
     }
 

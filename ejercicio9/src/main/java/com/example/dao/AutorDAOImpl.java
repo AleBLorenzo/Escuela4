@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.model.Autor;
-
+ 
 public class AutorDAOImpl implements IAutorDAO {
 
     private Connection conn;
