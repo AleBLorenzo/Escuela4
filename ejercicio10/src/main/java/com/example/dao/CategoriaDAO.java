@@ -16,4 +16,5 @@ public interface CategoriaDAO {
 
     List<Categoria> listarTodos();
 
+
 }

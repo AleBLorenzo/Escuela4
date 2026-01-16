@@ -7,9 +7,13 @@ import java.sql.Statement;
 
 public class ConfiguracionSGBD {
     public static void main(String[] args) {
-        
+
+        try {
+           Class.forName("org.sqlite.JDBC");
+
+       
         // La base de datos será un archivo "inventario.db" en la raíz del proyecto
-        String url = "jdbc:sqlite:inventario.db";
+        String url = "jdbc:sqlite:ejercicio10/inventario.db";
 
         try (Connection conn = DriverManager.getConnection(url);
                 Statement stmt = conn.createStatement()) {
@@ -52,5 +56,11 @@ public class ConfiguracionSGBD {
         } catch (SQLException e) {
             System.out.println("Error al crear la base de datos: " + e.getMessage());
         }
+
+         } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
     }
 }
