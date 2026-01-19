@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.example.model.MovimientoStock;
 
+
+
 public interface MovimientoStockDAO {
 
     void agregar(MovimientoStock m);

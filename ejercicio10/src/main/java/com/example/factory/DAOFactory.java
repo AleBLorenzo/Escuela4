@@ -1,5 +1,6 @@
 package com.example.factory;
 
+
 import com.example.dao.CategoriaDAO;
 import com.example.dao.CategoriaDAOImpl;
 import com.example.dao.MovimientoStockDAO;

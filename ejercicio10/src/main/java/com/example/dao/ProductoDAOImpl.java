@@ -131,7 +131,6 @@ public class ProductoDAOImpl implements ProductoDAO {
 
                 Producto p = new Producto();
 
-                p.setId(rs.getLong("id"));
                 p.setCodigo(rs.getString("codigo"));
                 p.setNombre(rs.getString("nombre"));
                 p.setCategoria_id(rs.getLong("categoria_id"));
