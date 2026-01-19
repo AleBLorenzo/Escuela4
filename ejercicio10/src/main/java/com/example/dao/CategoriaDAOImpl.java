@@ -18,23 +18,30 @@ public class CategoriaDAOImpl implements CategoriaDAO {
         this.conn = ConexionDB.getInstance().getConnection();
     }
 
-    @Override
-    public void agregar(Categoria c) {
+  @Override
+public void agregar(Categoria c) {
 
-        String sql = "INSERT INTO categorias (nombre, descripcion) VALUES (?, ?)";
+    String sql = "INSERT INTO categorias (nombre, descripcion) VALUES (?, ?)";
 
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+    try (PreparedStatement st = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            st.setString(1, c.getNombre());
-            st.setString(2, c.getDescripcion());
-            st.executeUpdate();
+        st.setString(1, c.getNombre());
+        st.setString(2, c.getDescripcion());
+        st.executeUpdate();
 
-        } catch (SQLException e) {
-            
-            e.printStackTrace();
+        // Obtener ID generado
+        try (ResultSet rs = st.getGeneratedKeys()) {
+            if (rs.next()) {
+                c.setId(rs.getLong(1)); // <- aquí se asigna el ID real
+            }
         }
 
+    } catch (SQLException e) {
+        e.printStackTrace();
+        throw new RuntimeException("Error agregando categoría", e);
     }
+
+}
 
     @Override
     public void actualizar(Categoria c) {

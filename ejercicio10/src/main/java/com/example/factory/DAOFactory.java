@@ -1,5 +1,8 @@
 package com.example.factory;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import com.example.dao.CategoriaDAO;
 import com.example.dao.CategoriaDAOImpl;
@@ -10,14 +13,13 @@ import com.example.dao.ProductoDAOImpl;
 import com.example.util.ConexionDB;
 
 public class DAOFactory {
-
-
     private static DAOFactory instance;
-    private ConexionDB conexion;
+
+    // ELIMINAMOS los campos 'conexion' y 'conn' de aquí.
+    // No queremos cachear la conexión porque cambia dinámicamente.
 
     private DAOFactory() {
-        // Usamos la conexión singleton que ya maneja autocommit
-        this.conexion = ConexionDB.getInstance();
+        // Constructor vacío
     }
 
     // Singleton
@@ -32,20 +34,33 @@ public class DAOFactory {
         return instance;
     }
 
-    // Devuelve DAO de Categoría
     public CategoriaDAO getCategoriaDAO() {
-        // Podemos agregar lógica si queremos DAOs distintos por SGBD
         return new CategoriaDAOImpl();
     }
 
-    // Devuelve DAO de Producto
     public ProductoDAO getProductoDAO() {
         return new ProductoDAOImpl();
     }
 
-    // Devuelve DAO de MovimientoStock
     public MovimientoStockDAO getMovimientoStockDAO() {
         return new MovimientoStockDAOImpl();
+    }
+
+    // CORRECCIÓN CRÍTICA AQUÍ:
+    public void limpiarTablas() {
+        // Pedimos la conexión ACTUAL a la clase ConexionDB en el momento de ejecutar
+        Connection conn = ConexionDB.getInstance().getConnection();
+
+        try (Statement st = conn.createStatement()) {
+            // El orden importa por las claves foráneas (FK)
+            st.execute("DELETE FROM movimientos_stock");
+            st.execute("DELETE FROM productos");
+            st.execute("DELETE FROM categorias");
+            // Reiniciar contadores autoincrementales (opcional, sintaxis varía por BD)
+            // System.out.println("✓ Tablas limpiadas correctamente");
+        } catch (SQLException e) {
+            throw new RuntimeException("Error limpiando tablas", e);
+        }
     }
 
 }

@@ -7,65 +7,76 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-
-
 public class ConexionDB {
 
     private static ConexionDB instance;
     private Connection connection;
     private String sgbd;
+    private Properties props;
 
     private ConexionDB() {
+        cargarConfiguracion();
+        conectar(this.props.getProperty("sgbd.actual")); // Conectar por defecto
+    }
+
+    private void cargarConfiguracion() {
         try {
-            Properties props = new Properties();
-            props.load(new FileInputStream("/home/manana/Escritorio/Escuela4/ejercicio10/config.properties"));
+            props = new Properties();
+            props.load(new FileInputStream("ejercicio10/config.properties"));
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo cargar config.properties", e);
+        }
+    }
 
-            sgbd = props.getProperty("sgbd.actual").toLowerCase();
+    // Método para conectar a un SGBD específico (usado para cambiar en tiempo de
+    // ejecución)
+    public void conectar(String sgbdObjetivo) {
+        this.sgbd = sgbdObjetivo.toLowerCase();
 
-            String url;
+        // Cerrar conexión anterior si existe
+        cerrar();
+
+        try {
+            String url = "";
             String user = "";
             String pass = "";
-            String driver;
+            String driver = "";
 
             switch (sgbd) {
                 case "sqlite":
                     driver = "org.sqlite.JDBC";
                     url = "jdbc:sqlite:" + props.getProperty("sqlite.ruta");
                     break;
-
                 case "postgresql":
                     driver = "org.postgresql.Driver";
-                    url = "jdbc:postgresql://" +
-                            props.getProperty("postgresql.host") + ":" +
-                            props.getProperty("postgresql.port") + "/" +
-                            props.getProperty("postgresql.database");
+                    url = "jdbc:postgresql://" + props.getProperty("postgresql.host") + ":" +
+                            props.getProperty("postgresql.port") + "/" + props.getProperty("postgresql.database");
                     user = props.getProperty("postgresql.user");
                     pass = props.getProperty("postgresql.password");
                     break;
-
                 case "mysql":
                     driver = "com.mysql.cj.jdbc.Driver";
-                    url = "jdbc:mysql://" +
-                            props.getProperty("mysql.host") + ":" +
-                            props.getProperty("mysql.port") + "/" +
-                            props.getProperty("mysql.database") +
-                            "?useSSL=false&serverTimezone=UTC";
+                    url = "jdbc:mysql://" + props.getProperty("mysql.host") + ":" +
+                            props.getProperty("mysql.port") + "/" + props.getProperty("mysql.database") +
+                            "?useSSL=false&serverTimezone=UTC&rewriteBatchedStatements=true";
                     user = props.getProperty("mysql.user");
                     pass = props.getProperty("mysql.password");
                     break;
-
                 default:
                     throw new RuntimeException("SGBD no soportado: " + sgbd);
             }
 
             Class.forName(driver);
-            connection = DriverManager.getConnection(url, user, pass);
-            connection.setAutoCommit(true); //autocommit activado
+            if (sgbd.equals("sqlite")) {
+                connection = DriverManager.getConnection(url);
+            } else {
+                connection = DriverManager.getConnection(url, user, pass);
+            }
+            connection.setAutoCommit(true);
+            System.out.println(">>> Conectado a: " + sgbd);
 
-            System.out.println("Conectado a " + sgbd + " correctamente (autocommit activado)");
-
-        } catch (IOException | ClassNotFoundException | SQLException e) {
-            throw new RuntimeException("Error al conectar a la base de datos", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error conectando a " + sgbd, e);
         }
     }
 
@@ -81,15 +92,23 @@ public class ConexionDB {
     }
 
     public Connection getConnection() {
+        try {
+            if (connection == null || connection.isClosed()) {
+                conectar(this.sgbd); // Reconectar si se cayó
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return connection;
     }
 
     public void cerrar() {
         try {
-            if (connection != null) connection.close();
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+            /* Ignorar */ }
     }
 
     public String getSGBD() {

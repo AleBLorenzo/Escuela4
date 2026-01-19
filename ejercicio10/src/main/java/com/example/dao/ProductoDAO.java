@@ -16,4 +16,10 @@ public interface ProductoDAO {
 
     List<Producto> listarTodos();
 
+    void insertarLote(List<Producto> productos);
+
+    List<Producto> productosConStockBajo(int limite);
+
+    void consultaCompleja();
+
 }

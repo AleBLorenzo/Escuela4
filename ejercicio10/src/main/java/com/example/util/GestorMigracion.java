@@ -1,10 +1,8 @@
 package com.example.util;
 
+import java.sql.Connection;
 import java.util.List;
 
-import com.example.dao.CategoriaDAO;
-import com.example.dao.MovimientoStockDAO;
-import com.example.dao.ProductoDAO;
 import com.example.factory.DAOFactory;
 import com.example.model.Categoria;
 import com.example.model.MovimientoStock;
@@ -12,38 +10,47 @@ import com.example.model.Producto;
 
 public class GestorMigracion {
 
-    private DAOFactory origenFactory;
-    private DAOFactory destinoFactory;
+   private DAOFactory origen;
+    private DAOFactory destino;
 
     public GestorMigracion(DAOFactory origen, DAOFactory destino) {
-        this.origenFactory = origen;
-        this.destinoFactory = destino;
+        this.origen = origen;
+        this.destino = destino;
     }
 
     public void migrar() {
+        Connection conn = ConexionDB.getInstance().getConnection();
 
-        // Migrar Categorías
-        List<Categoria> categorias = origenFactory.getCategoriaDAO().listarTodos();
-        CategoriaDAO daoCatDestino = destinoFactory.getCategoriaDAO();
-        for (Categoria c : categorias) {
-            daoCatDestino.agregar(c);
+        try {
+            conn.setAutoCommit(false);
+
+            System.out.println("Migrando categorías...");
+            List<Categoria> categorias = origen.getCategoriaDAO().listarTodos();
+            for (Categoria c : categorias) {
+                destino.getCategoriaDAO().agregar(c);
+            }
+
+            System.out.println("Migrando productos...");
+            List<Producto> productos = origen.getProductoDAO().listarTodos();
+            for (Producto p : productos) {
+                destino.getProductoDAO().agregar(p);
+            }
+
+            System.out.println("Migrando movimientos...");
+            List<MovimientoStock> movs = origen.getMovimientoStockDAO().listarTodos();
+            for (MovimientoStock m : movs) {
+                destino.getMovimientoStockDAO().agregar(m);
+            }
+
+            conn.commit();
+            System.out.println("✓ Migración completada");
+
+        } catch (Exception e) {
+            try { conn.rollback(); } catch (Exception ex) {}
+            throw new RuntimeException("Error en migración", e);
+        } finally {
+            try { conn.setAutoCommit(true); } catch (Exception e) {}
         }
-
-        // Migrar Productos
-        List<Producto> productos = origenFactory.getProductoDAO().listarTodos();
-        ProductoDAO daoProdDestino = destinoFactory.getProductoDAO();
-        for (Producto p : productos) {
-            daoProdDestino.agregar(p);
-        }
-
-        // Migrar Movimientos de Stock
-        List<MovimientoStock> movimientos = origenFactory.getMovimientoStockDAO().listarTodos();
-        MovimientoStockDAO daoMovDestino = destinoFactory.getMovimientoStockDAO();
-        for (MovimientoStock m : movimientos) {
-            daoMovDestino.agregar(m);
-        }
-
-        System.out.println("Migración completada!");
     }
 
 }

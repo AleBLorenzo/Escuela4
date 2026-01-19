@@ -120,7 +120,7 @@ public class ProductoDAOImpl implements ProductoDAO {
     public List<Producto> listarTodos() {
 
         List<Producto> pros = new ArrayList<>();
-        
+
         String sql = "SELECT id, codigo, nombre, categoria_id, precio, stock, fecha_alta, activo " +
                 "FROM productos";
 
@@ -130,7 +130,7 @@ public class ProductoDAOImpl implements ProductoDAO {
             while (rs.next()) {
 
                 Producto p = new Producto();
-
+                p.setId(rs.getLong("id"));
                 p.setCodigo(rs.getString("codigo"));
                 p.setNombre(rs.getString("nombre"));
                 p.setCategoria_id(rs.getLong("categoria_id"));
@@ -150,4 +150,74 @@ public class ProductoDAOImpl implements ProductoDAO {
         return pros;
     }
 
+    @Override
+    public List<Producto> productosConStockBajo(int limite) {
+        List<Producto> lista = new ArrayList<>();
+        String sql = "SELECT * FROM productos WHERE stock < ?";
+
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            st.setInt(1, limite);
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                Producto p = new Producto();
+                p.setNombre(rs.getString("nombre"));
+                p.setStock(rs.getInt("stock"));
+                lista.add(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    @Override
+    public void consultaCompleja() {
+        String sql = """
+                    SELECT c.nombre, COUNT(p.id) total
+                    FROM categorias c
+                    JOIN productos p ON c.id = p.categoria_id
+                    GROUP BY c.nombre
+                """;
+
+        try (PreparedStatement st = conn.prepareStatement(sql);
+                ResultSet rs = st.executeQuery()) {
+
+            while (rs.next()) {
+                System.out.println(rs.getString(1) + " → " + rs.getInt(2));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void insertarLote(List<Producto> productos) {
+        String sql = "INSERT INTO productos (codigo, nombre, categoria_id, precio, stock, fecha_alta, activo) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try {
+            conn.setAutoCommit(false); // <--- VITAL para rendimiento
+            try (PreparedStatement st = conn.prepareStatement(sql)) {
+                for (Producto p : productos) {
+                    st.setString(1, p.getCodigo());
+                    st.setString(2, p.getNombre());
+                    st.setLong(3, p.getCategoria_id());
+                    st.setBigDecimal(4, p.getPrecio());
+                    st.setInt(5, p.getStock());
+                    st.setObject(6, p.getFecha_alta());
+                    st.setBoolean(7, p.isActivo());
+                    st.addBatch();
+                }
+                st.executeBatch();
+                conn.commit(); // <--- Si no hay commit, no hay datos
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error en lote", e);
+        }
+    }
 }

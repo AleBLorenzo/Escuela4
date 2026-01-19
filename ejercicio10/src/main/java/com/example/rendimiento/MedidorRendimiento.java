@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.dao.ProductoDAO;
 import com.example.factory.DAOFactory;
 import com.example.model.Producto;
 
@@ -17,62 +16,67 @@ public class MedidorRendimiento {
         this.factory = factory;
     }
 
-    // Mide tiempo de inserciones masivas
     public long medirInserciones(int cantidad) {
-        ProductoDAO productoDAO = factory.getProductoDAO();
+        // --- PASO 1: PREPARACIÓN (Fuera del tiempo de medición) ---
+        // Insertamos una categoría base para que los productos tengan a dónde apuntar
+        try {
+            com.example.model.Categoria cat = new com.example.model.Categoria();
+            cat.setNombre("Categoría de Prueba");
+            cat.setDescripcion("Base para test de rendimiento");
 
-        List<Producto> productos = new ArrayList<>();
-        for (int i = 1; i <= cantidad; i++) {
-            productos.add(new Producto(
-                null,
-                "COD" + i,
-                "Producto " + i,
-                1L,
-                new BigDecimal("10.0"),
-                100,
-                LocalDate.now(),
-                true
-            ));
-        }
+            // El DAO se encarga de insertarla.
+            // Si usas un ID fijo (1), asegúrate de que el DAO no falle si ya existe.
+            factory.getCategoriaDAO().agregar(cat);
+            // Importante: Obtenemos el ID que la base de datos le asignó realmente
+            long idGenerado = cat.getId();
 
-        long inicio = System.nanoTime();
-
-        for (Producto p : productos) {
-            productoDAO.agregar(p);
-        }
-
-        long fin = System.nanoTime();
-        return fin - inicio; // tiempo en nanosegundos
-    }
-
-    // Mide tiempo de consultas complejas
-    public long medirConsultas() {
-        ProductoDAO productoDAO = factory.getProductoDAO();
-        long inicio = System.nanoTime();
-
-        // Ejemplo de consulta: listar todos los productos
-        productoDAO.listarTodos();
-
-        long fin = System.nanoTime();
-        return fin - inicio;
-    }
-
-    // Mide tiempo de actualizaciones masivas
-    public long medirActualizaciones(int cantidad) {
-        ProductoDAO productoDAO = factory.getProductoDAO();
-
-        long inicio = System.nanoTime();
-
-        for (int i = 1; i <= cantidad; i++) {
-            Producto p = productoDAO.obtenerPorId(i);
-            if (p != null) {
-                p.setPrecio(p.getPrecio().add(new BigDecimal("1.0")));
-                productoDAO.actualizar(p);
+            // Preparar la lista de productos en memoria
+            List<Producto> lote = new ArrayList<>();
+            long ts = System.currentTimeMillis();
+            for (int i = 0; i < cantidad; i++) {
+                lote.add(new Producto(null, "C-" + ts + "-" + i, "Prod " + i,
+                        idGenerado, new BigDecimal("10.0"), 100,
+                        LocalDate.now(), true));
             }
+
+            // --- PASO 2: MEDICIÓN REAL ---
+            long inicio = System.nanoTime();
+            factory.getProductoDAO().insertarLote(lote); // Método que usa Batch
+            long fin = System.nanoTime();
+
+            return fin - inicio;
+
+        } catch (Exception e) {
+            System.err.println("Error crítico en la medición: " + e.getMessage());
+            return 0;
+        }
+    }
+
+    public long medirConsultas() {
+        long inicio = System.nanoTime();
+        // Usamos la consulta compleja con JOINs y GROUP BY, no listarTodos simple
+        factory.getProductoDAO().consultaCompleja();
+        long fin = System.nanoTime();
+        return fin - inicio;
+    }
+
+    public long medirActualizaciones(int cantidad) {
+        // Primero obtenemos los IDs reales para no fallar
+        List<Producto> productos = factory.getProductoDAO().listarTodos();
+        int limite = Math.min(cantidad, productos.size());
+
+        long inicio = System.nanoTime();
+
+        // Aquí sí hacemos un bucle porque queremos probar la latencia de updates
+        // individuales
+        // (A menos que implementes updateBatch también)
+        for (int i = 0; i < limite; i++) {
+            Producto p = productos.get(i);
+            p.setPrecio(p.getPrecio().add(BigDecimal.ONE));
+            factory.getProductoDAO().actualizar(p);
         }
 
         long fin = System.nanoTime();
         return fin - inicio;
     }
-
 }
