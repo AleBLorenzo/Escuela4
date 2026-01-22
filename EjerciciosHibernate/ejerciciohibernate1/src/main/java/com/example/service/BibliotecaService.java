@@ -1,5 +1,6 @@
 package com.example.service;
 
+import java.time.Year;
 import java.util.List;
 
 import com.example.dao.LibroDAO;
@@ -11,58 +12,78 @@ import jakarta.persistence.EntityManager;
 
 public class BibliotecaService {
 
-    private LibroDAO libroDAO;
-
-   
-    public void guardar(Libro libro) {
+    public void guardar(Libro libro) throws Exception {
 
         EntityManager em = JPAUtil.getEntityManager();
+        LibroDAO libroDAO = new LibroDAOImpl(em);
 
-        libroDAO = new LibroDAOImpl(em);
         try {
+            if (libroDAO.buscarPorIsbn(libro.getIsbn()) != null) {
+                throw new Exception("El ISBN ya existe.");
+            }
+
+            int anioActual = Year.now().getValue();
+            if (libro.getAnio() < 1000 || libro.getAnio() > anioActual) {
+                throw new Exception("Año incorrecto.");
+            }
+
+            if (libro.getPrecio() <= 0) {
+                throw new Exception("Precio incorrecto.");
+            }
 
             em.getTransaction().begin();
-
-           libroDAO.guardar(libro);
-
+            libroDAO.guardar(libro);
             em.getTransaction().commit();
 
-        } catch (Exception e) {
+            System.out.println("Libro registrado con éxito. ID: " + libro.getId());
 
+        } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            e.printStackTrace();
+            throw e;
         } finally {
             em.close();
         }
 
     }
-
 
     public Libro buscarPorId(Long id) {
 
-      EntityManager  em = JPAUtil.getEntityManager();
+        EntityManager em = JPAUtil.getEntityManager();
+        LibroDAO libroDAO = new LibroDAOImpl(em);
 
         try {
 
-            return em.find(Libro.class, id);
+            Libro librosolicutado = libroDAO.buscarPorId(id);
 
-        } finally {
-            em.close();
+            if (librosolicutado == null) {
+                throw new Exception("Error: El ID '" + id + "' ya existe.");
+            }
+
+            return librosolicutado;
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            return null;
         }
-
     }
 
-
     public Libro buscarPorIsbn(String isbn) {
+
         EntityManager em = JPAUtil.getEntityManager();
+        LibroDAO libroDAO = new LibroDAOImpl(em);
 
         try {
 
-            return em.createQuery("SELECT l FROM Libro l WHERE l.isbn = :isbn", Libro.class)
-                    .setParameter("isbn", isbn)
-                    .getSingleResult();
+            Libro librosolicutado = libroDAO.buscarPorIsbn(isbn);
+
+            if (librosolicutado == null) {
+                throw new Exception("Error: El ISBN '" + isbn + "' ya existe.");
+            }
+
+            return librosolicutado;
 
         } catch (Exception e) {
 
@@ -76,12 +97,16 @@ public class BibliotecaService {
     public List<Libro> listarTodos() {
 
         EntityManager em = JPAUtil.getEntityManager();
+        LibroDAO libroDAO = new LibroDAOImpl(em);
 
         try {
-            return em.createQuery(
-                    "SELECT l FROM Libro l ORDER BY l.titulo",
-                    Libro.class)
-                    .getResultList();
+
+            List<Libro> lista = libroDAO.listarTodos();
+
+            if (lista.isEmpty()) {
+                System.out.println("No hay libros.");
+            }
+            return lista;
 
         } catch (Exception e) {
 
@@ -90,19 +115,25 @@ public class BibliotecaService {
         } finally {
             em.close();
         }
-        return null;
+        return List.of();
     }
-
 
     public List<Libro> listarDisponibles() {
 
         EntityManager em = JPAUtil.getEntityManager();
-
+        LibroDAO libroDAO = new LibroDAOImpl(em);
         try {
-            return em.createQuery(
-                    "SELECT l FROM Libro l WHERE l.disponible = true ORDER BY l.autor, l.titulo",
-                    Libro.class)
-                    .getResultList();
+
+            List<Libro> lista = libroDAO.listarDisponibles();
+            int cantidad = lista.size();
+
+            if (lista.isEmpty()) {
+                System.out.println("No hay libros disponibles en este momento.");
+            } else {
+                System.out.println("Total disponibles: " + lista.size());
+            }
+
+            return lista;
 
         } catch (Exception e) {
 
@@ -113,17 +144,18 @@ public class BibliotecaService {
         return null;
     }
 
- 
     public List<Libro> buscarPorAutor(String autor) {
 
         EntityManager em = JPAUtil.getEntityManager();
-
+        LibroDAO libroDAO = new LibroDAOImpl(em);
         try {
-            return em.createQuery(
-                    "SELECT l FROM Libro l WHERE LOWER(l.autor) LIKE LOWER(:autor)",
-                    Libro.class)
-                    .setParameter("autor", "%" + autor + "%")
-                    .getResultList();
+            List<Libro> lista = libroDAO.buscarPorAutor(autor);
+
+            if (lista.isEmpty()) {
+                System.out.println("No hay libros en este momento.");
+            }
+
+            return lista;
 
         } catch (Exception e) {
 
@@ -134,15 +166,18 @@ public class BibliotecaService {
         return null;
     }
 
- 
     public void actualizar(Libro libro) {
 
         EntityManager em = JPAUtil.getEntityManager();
-
+        LibroDAO libroDAO = new LibroDAOImpl(em);
         try {
             em.getTransaction().begin();
-            em.merge(libro);
+
+            libroDAO.actualizar(libro);
+
             em.getTransaction().commit();
+
+            System.out.println("Libro actualizado correctamente en la base de datos.");
 
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
@@ -154,21 +189,18 @@ public class BibliotecaService {
         }
     }
 
-  
     public void eliminar(Long id) {
 
         EntityManager em = JPAUtil.getEntityManager();
-
+        LibroDAO libroDAO = new LibroDAOImpl(em);
         try {
             em.getTransaction().begin();
 
-            Libro libro = em.find(Libro.class, id);
-            if (libro != null) {
-
-                em.remove(libro);
-            }
+            libroDAO.eliminar(id);
 
             em.getTransaction().commit();
+
+            System.out.println("Libro eliminado correctamente en la base de datos.");
 
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
@@ -180,16 +212,16 @@ public class BibliotecaService {
         }
     }
 
-    
     public long contarTotal() {
 
         EntityManager em = JPAUtil.getEntityManager();
-
+        LibroDAO libroDAO = new LibroDAOImpl(em);
         try {
-            return em.createQuery(
-                    "SELECT COUNT(l) FROM Libro l",
-                    Long.class)
-                    .getSingleResult();
+
+            long catidad = libroDAO.contarTotal();
+
+            return catidad;
+
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -199,16 +231,15 @@ public class BibliotecaService {
         return 0;
     }
 
-
     public long contarDisponibles() {
 
         EntityManager em = JPAUtil.getEntityManager();
-
+        LibroDAO libroDAO = new LibroDAOImpl(em);
         try {
-            return em.createQuery(
-                    "SELECT COUNT(l) FROM Libro l WHERE l.disponible = true",
-                    Long.class)
-                    .getSingleResult();
+
+            long catidad = libroDAO.contarDisponibles();
+
+            return catidad;
 
         } catch (Exception e) {
 
@@ -220,16 +251,16 @@ public class BibliotecaService {
         }
     }
 
-
     public Double precioPromedio() {
 
         EntityManager em = JPAUtil.getEntityManager();
-
+        LibroDAO libroDAO = new LibroDAOImpl(em);
         try {
-            return em.createQuery(
-                    "SELECT AVG(l.precio) FROM Libro l",
-                    Double.class)
-                    .getSingleResult();
+
+            double catidad = libroDAO.precioPromedio();
+
+            return catidad;
+
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -239,23 +270,16 @@ public class BibliotecaService {
         return null;
     }
 
-  
     public Libro libroMasCaro() {
 
         EntityManager em = JPAUtil.getEntityManager();
+        LibroDAO libroDAO = new LibroDAOImpl(em);
 
         try {
-            List<Libro> resultado = em.createQuery(
-                    "SELECT l FROM Libro l ORDER BY l.precio DESC",
-                    Libro.class)
-                    .setMaxResults(1)
-                    .getResultList();
 
-            if (resultado.isEmpty()) {
-                return null;
-            } else {
-                return resultado.get(0);
-            }
+            Libro libro = libroDAO.libroMasCaro();
+
+            return libro;
 
         } catch (Exception e) {
 
@@ -265,24 +289,17 @@ public class BibliotecaService {
         }
         return null;
     }
-
 
     public Libro libroMasBarato() {
 
         EntityManager em = JPAUtil.getEntityManager();
+        LibroDAO libroDAO = new LibroDAOImpl(em);
 
         try {
-            List<Libro> resultado = em.createQuery(
-                    "SELECT l FROM Libro l ORDER BY l.precio ASC",
-                    Libro.class)
-                    .setMaxResults(1)
-                    .getResultList();
 
-            if (resultado.isEmpty()) {
-                return null;
-            } else {
-                return resultado.get(0);
-            }
+            Libro libro = libroDAO.libroMasBarato();
+
+            return libro;
 
         } catch (Exception e) {
 
@@ -292,6 +309,5 @@ public class BibliotecaService {
         }
         return null;
     }
-
 
 }

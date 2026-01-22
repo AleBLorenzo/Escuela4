@@ -17,29 +17,29 @@ public class Libro {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "isbn", unique=true , nullable = false, length = 20)
+    @Column(name = "isbn", unique = true, nullable = false, length = 20)
     private String isbn;
 
-    @Column(name = "titulo", nullable = false ,length = 200)
+    @Column(name = "titulo", nullable = false, length = 200)
     private String titulo;
 
-    @Column(name = "autor", nullable = false ,length = 100)
+    @Column(name = "autor", nullable = false, length = 100)
     private String autor;
 
-    @Column(name = "editorial" ,length = 100)
+    @Column(name = "editorial", nullable = false, length = 100)
     private String editorial;
 
-    @Column(name = "anio" , nullable = false )
+    @Column(name = "anio", nullable = false)
     private Integer anio;
 
-    @Column(name = "precio" , nullable = false )
+    @Column(name = "precio", nullable = false)
     private Double precio;
 
-    @Column(name = "disponible" , nullable = false )
-    
+    @Column(name = "disponible", nullable = false)
+
     private Boolean disponible;
 
-    @Column(name = "fecha_Registro" , nullable = false, updatable = false )
+    @Column(name = "fecha_Registro", nullable = false, updatable = false)
     private LocalDate fechaRegistro;
 
     public Long getId() {
@@ -114,13 +114,13 @@ public class Libro {
         this.fechaRegistro = fechaRegistro;
     }
 
-    public Libro(Integer anio, String autor, Boolean disponible, String editorial, LocalDate fechaRegistro, Long id, String isbn, Double precio, String titulo) {
+    public Libro(Integer anio, String autor, Boolean disponible, String editorial, LocalDate fechaRegistro, String isbn,
+            Double precio, String titulo) {
         this.anio = anio;
         this.autor = autor;
         this.disponible = disponible;
         this.editorial = editorial;
         this.fechaRegistro = fechaRegistro;
-        this.id = id;
         this.isbn = isbn;
         this.precio = precio;
         this.titulo = titulo;
@@ -145,6 +145,5 @@ public class Libro {
         sb.append('}');
         return sb.toString();
     }
-    
 
 }

@@ -107,7 +107,7 @@ Seleccione una opción:
 - Validar que el ISBN no exista ya en la base de datos
 - Validar que el año sea razonable (entre 1000 y año actual)
 - Validar que el precio sea positivo
-- Mostrar mensaje de confirmación con el ID generado
+- Mostrar mensaje de confirmación con el ID generadoim
 
 #### 2. Buscar libro por ISBN
 - Solicitar ISBN al usuario

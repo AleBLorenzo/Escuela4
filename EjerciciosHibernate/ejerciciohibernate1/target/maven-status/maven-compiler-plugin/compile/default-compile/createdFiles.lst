@@ -1,0 +1,6 @@
+com/example/service/BibliotecaService.class
+com/example/util/JPAUtil.class
+com/example/model/Libro.class
+com/example/Main.class
+com/example/dao/LibroDAO.class
+com/example/dao/LibroDAOImpl.class
