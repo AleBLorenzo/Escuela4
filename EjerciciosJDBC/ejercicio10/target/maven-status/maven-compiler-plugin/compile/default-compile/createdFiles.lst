@@ -1,0 +1,17 @@
+com/example/rendimiento/MedidorRendimiento.class
+com/example/model/Producto.class
+com/example/util/GestorMigracion.class
+com/example/factory/SGBDFactory.class
+com/example/util/ConfiguracionSGBD.class
+com/example/util/ConexionDB.class
+com/example/rendimiento/ReporteComparativo.class
+com/example/dao/ProductoDAOImpl.class
+com/example/dao/MovimientoStockDAOImpl.class
+com/example/dao/MovimientoStockDAO.class
+com/example/factory/DAOFactory.class
+com/example/model/Categoria.class
+com/example/model/MovimientoStock.class
+com/example/app/AplicacionInventario.class
+com/example/dao/CategoriaDAO.class
+com/example/dao/CategoriaDAOImpl.class
+com/example/dao/ProductoDAO.class
