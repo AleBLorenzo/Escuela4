@@ -13,7 +13,7 @@
         <properties>
             <!-- Configuración de MySQL -->
             <property name="jakarta.persistence.jdbc.url" 
-                      value="jdbc:mysql://74.208.73.131:3306/hibernate_demo"/>
+                      value="jdbc:mysql://74.208.73.131:3306/empresa_db"/>
             <property name="jakarta.persistence.jdbc.user" value="admin"/>
             <property name="jakarta.persistence.jdbc.password" value="admin123"/>
             <property name="jakarta.persistence.jdbc.driver" 

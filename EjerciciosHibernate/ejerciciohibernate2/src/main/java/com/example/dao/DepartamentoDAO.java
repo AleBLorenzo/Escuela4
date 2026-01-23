@@ -11,12 +11,19 @@ public interface  DepartamentoDAO {
 
     List<Departamento> listarTodos();
 
-    Departamento buscarPorCodigo(Long id);
+    Departamento buscarPorCodigo(String codigo);
 
     void actualizar(Departamento departamento);
 
-    void eliminar(Long id);
+    void eliminar(String codigo);
 
     List<Empleado> listarEmpleados(Departamento departamento);
+
+    Departamento DepartamentoConMasEmpleados();
+
+    List<Object[]> salarioPromedioPorDepartamento();
+
+    List<Object[]> contarEmpleadosPorDepartamento();
+
 
 }
