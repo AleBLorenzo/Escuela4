@@ -31,7 +31,7 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
     public List<Empleado> listarTodos() {
 
         try {
-            return em.createQuery("SELECT e FROM Empleado e WHERE e.activo = true ORDER BY e.apellidos", Empleado.class)
+            return em.createQuery("SELECT e FROM Empleado e LEFT JOIN FETCH e.departamento WHERE e.activo = true ORDER BY e.apellidos", Empleado.class)
                     .getResultList();
         } catch (NoResultException e) {
             return List.of();
@@ -77,10 +77,14 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
     public void reasignarDepartamento(Empleado empleado, Long id_departamento) {
         try {
             Departamento dep = em.find(Departamento.class, id_departamento);
-            if (dep != null) {
-                empleado.setDepartamento(dep);
-                em.merge(empleado);
+
+            if (dep == null) {
+                throw new IllegalArgumentException("Departamento no existe");
             }
+
+            empleado.setDepartamento(dep);
+            em.merge(empleado);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

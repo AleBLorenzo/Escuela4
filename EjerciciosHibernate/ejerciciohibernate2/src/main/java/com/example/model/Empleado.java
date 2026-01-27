@@ -54,16 +54,19 @@ public class Empleado {
     }
 
     public Empleado() {
+        this.activo = true; // Por defecto activo
+        this.fechaContratacion = LocalDate.now(); // Fecha actual al crear
     }
 
     public Empleado(Boolean activo, String apellidos, Departamento departamento, String email, String nombre,
             Double salario) {
-        this.activo = activo;
+        this.activo = true;
         this.apellidos = apellidos;
         this.departamento = departamento;
         this.email = email;
         this.nombre = nombre;
         this.salario = salario;
+        this.fechaContratacion = LocalDate.now();
     }
 
     @PrePersist

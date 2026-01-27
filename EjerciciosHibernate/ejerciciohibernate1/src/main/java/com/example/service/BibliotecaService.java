@@ -67,6 +67,8 @@ public class BibliotecaService {
 
             e.printStackTrace();
             return null;
+        } finally {
+            em.close();
         }
     }
 

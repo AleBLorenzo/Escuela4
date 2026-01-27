@@ -425,6 +425,48 @@ Esto carga el departamento en la misma consulta, evitando N+1 queries.
 
 ### Pista 3: Reasignación de Empleado
 
+Apellidos: García Pérez
+Email: juan.garcia@techcorp.com
+Salario: 45000
+¿Asignar a departamento? (S/N): S
+Código de departamento: DEV
+
+✓ Empleado creado y asignado al departamento Desarrollo
+```
+
+### Listar Departamento con Empleados
+
+```
+=== VER EMPLEADOS DE DEPARTAMENTO ===
+Código: DEV
+
+Departamento: Desarrollo (DEV)
+Ubicación: Edificio A, Piso 3
+Presupuesto: 500,000.00€
+
+EMPLEADOS (3):
+1. Juan García Pérez - juan.garcia@techcorp.com - 45,000€
+2. María López Ruiz - maria.lopez@techcorp.com - 48,000€
+3. Pedro Martínez Sanz - pedro.martinez@techcorp.com - 42,000€
+
+Salario promedio: 45,000.00€
+```
+
+### Estadísticas
+
+```
+=== SALARIO PROMEDIO POR DEPARTAMENTO ===
+
+Desarrollo: 45,000.00€
+Marketing: 38,500.00€
+RRHH: 35,000.00€
+Ventas: 52,000.00€
+
+Promedio general: 42,625.00€
+```
+
+---
+
 Para reasignar un empleado:
 
 ```java
