@@ -2,24 +2,24 @@ package com.tienda.dao;
 
 import java.util.List;
 
-import com.tienda.model.Pedido;
+import com.tienda.model.LineaPedido;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
-public class PedidoDAOImpl implements PedidoDAO {
+public class LineaPedidoDAOImpl implements LineaPedidoDAO {
 
-        private EntityManager em;
+    private EntityManager em;
 
-    public PedidoDAOImpl(EntityManager em) {
+    public LineaPedidoDAOImpl(EntityManager em) {
         this.em = em;
     }
 
     @Override
-    public void guardar(Pedido pedido) {
+    public void guardar(LineaPedido linea) {
         try {
             em.getTransaction().begin();
-            em.persist(pedido);
+            em.persist(linea);
             em.getTransaction().commit();
         } catch(Exception e) {
             em.getTransaction().rollback();
@@ -28,10 +28,10 @@ public class PedidoDAOImpl implements PedidoDAO {
     }
 
     @Override
-    public void actualizar(Pedido pedido) {
+    public void actualizar(LineaPedido linea) {
         try {
             em.getTransaction().begin();
-            em.merge(pedido);
+            em.merge(linea);
             em.getTransaction().commit();
         } catch(Exception e) {
             em.getTransaction().rollback();
@@ -43,8 +43,8 @@ public class PedidoDAOImpl implements PedidoDAO {
     public void eliminar(Long id) {
         try {
             em.getTransaction().begin();
-            Pedido p = em.find(Pedido.class, id);
-            if(p != null) em.remove(p);
+            LineaPedido lp = em.find(LineaPedido.class, id);
+            if(lp != null) em.remove(lp);
             em.getTransaction().commit();
         } catch(Exception e) {
             em.getTransaction().rollback();
@@ -53,26 +53,18 @@ public class PedidoDAOImpl implements PedidoDAO {
     }
 
     @Override
-    public Pedido buscarPorId(Long id) {
+    public LineaPedido buscarPorId(Long id) {
         try {
-            return em.find(Pedido.class, id);
+            return em.find(LineaPedido.class, id);
         } catch(NoResultException e) {
             return null;
         }
     }
 
     @Override
-    public List<Pedido> listarTodos() {
-        return em.createQuery("SELECT p FROM Pedido p ORDER BY p.fechaPedido DESC", Pedido.class)
+    public List<LineaPedido> listarPorPedido(Long pedidoId) {
+        return em.createQuery("SELECT lp FROM LineaPedido lp WHERE lp.pedido.id = :id", LineaPedido.class)
+                 .setParameter("id", pedidoId)
                  .getResultList();
     }
-
-    @Override
-    public List<Pedido> listarPorCliente(Long clienteId) {
-        return em.createQuery("SELECT p FROM Pedido p WHERE p.cliente.id = :id ORDER BY p.fechaPedido DESC", Pedido.class)
-                 .setParameter("id", clienteId)
-                 .getResultList();
-    }
-
-
 }
