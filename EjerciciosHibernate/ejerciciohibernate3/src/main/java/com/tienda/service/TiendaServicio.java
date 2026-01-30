@@ -160,7 +160,6 @@ public class TiendaServicio {
 
     // -------------------- MÉTODOS DE REPORTES --------------------
 
-    // 18. Productos más vendidos (top 10)
     public List<EstadisticasDTO> productosMasVendidos() {
         return pedidoDAO.listarTodos().stream()
                 .flatMap(p -> p.getLineas().stream())
@@ -178,7 +177,6 @@ public class TiendaServicio {
                 .collect(Collectors.toList());
     }
 
-    // 19. Clientes con más pedidos (top 5)
     public List<Cliente> clientesMasPedidos() {
         return clienteDAO.listarClientesConPedidos().stream()
                 .sorted((c1, c2) -> Integer.compare(c2.getPedidos().size(), c1.getPedidos().size()))
@@ -186,7 +184,6 @@ public class TiendaServicio {
                 .collect(Collectors.toList());
     }
 
-    // 20. Ingresos totales por categoría
     public List<EstadisticasDTO> ingresosTotalesPorCategoria() {
         return pedidoDAO.listarTodos().stream()
                 .flatMap(p -> p.getLineas().stream())
@@ -202,7 +199,6 @@ public class TiendaServicio {
                 .collect(Collectors.toList());
     }
 
-    // 21. Pedidos por estado
     public List<EstadisticasDTO> pedidosPorEstado() {
         return pedidoDAO.listarTodos().stream()
                 .collect(Collectors.groupingBy(
@@ -217,7 +213,6 @@ public class TiendaServicio {
                 .collect(Collectors.toList());
     }
 
-    // 22. Productos sin ventas
     public List<Producto> productosSinVentas() {
         List<Long> productosVendidos = pedidoDAO.listarTodos().stream()
                 .flatMap(p -> p.getLineas().stream())
@@ -230,14 +225,12 @@ public class TiendaServicio {
                 .collect(Collectors.toList());
     }
 
-    // 23. Valor total de inventario
     public double valorTotalInventario() {
         return productoDAO.listarTodos().stream()
                 .mapToDouble(p -> p.getPrecio() * p.getStock())
                 .sum();
     }
 
-    // 24. Clientes sin pedidos
     public List<Cliente> clientesSinPedidos() {
         return clienteDAO.listarTodos().stream()
                 .filter(c -> c.getPedidos().isEmpty())

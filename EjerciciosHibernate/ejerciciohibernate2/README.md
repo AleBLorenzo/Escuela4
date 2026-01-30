@@ -23,14 +23,7 @@ Este proyecto es un sistema de gestión de recursos humanos para una empresa, de
 
 ## ⚙ Instalación y Ejecución
 
-1. Clonar el repositorio:
-
-```bash
-git clone https://github.com/tu-usuario/empleados-departamentos.git
-cd empleados-departamentos
-```
-
-2. Configurar la base de datos en `persistence.xml`:
+1. Configurar la base de datos en `persistence.xml`:
 
 ```xml
 <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/empresa_db"/>
@@ -39,20 +32,20 @@ cd empleados-departamentos
 <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
 ```
 
-3. Crear la base de datos:
+2. Crear la base de datos:
 
 ```sql
 CREATE DATABASE empresa_db;
 ```
 
-4. Compilar y ejecutar:
+3. Compilar y ejecutar:
 
 ```bash
 mvn clean install
 mvn exec:java -Dexec.mainClass="com.example.Main"
 ```
 
-5. Seguir las opciones del menú en consola.
+4. Seguir las opciones del menú en consola.
 
 ---
 
@@ -120,7 +113,8 @@ departamento.removeEmpleado(empleado);
 
 ## 📋 Ejemplo de Menú de Consola
 
-```
+```**Autor:** Tu Nombre
+**Fecha:** Enero 2026
 === SISTEMA DE GESTIÓN DE EMPLEADOS ===
 
 1. Gestión de departamentos
@@ -206,7 +200,3 @@ Ejecutar `Main.java` y navegar por los menús:
 
 Cada menú permite crear, listar, actualizar, eliminar y consultar estadísticas de forma interactiva.
 
----
-
-**Autor:** Tu Nombre
-**Fecha:** Enero 2026

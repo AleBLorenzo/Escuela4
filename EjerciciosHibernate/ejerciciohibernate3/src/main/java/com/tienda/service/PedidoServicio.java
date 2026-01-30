@@ -119,7 +119,6 @@ public class PedidoServicio {
             throw new IllegalArgumentException("Cliente no existe");
         }
 
-        // Usamos el ID del cliente para la consulta
         return pedidoDAO.listarPorCliente(cliente.getId()).stream()
                 .map(p -> new PedidoResumenDTO(
                         p.getId(),
